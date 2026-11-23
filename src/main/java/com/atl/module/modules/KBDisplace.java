@@ -146,7 +146,9 @@ public class KBDisplace extends Module {
         }
 
         if (displaceThisTick) {
-            float offset = (float) yawOffset.value;
+            float f = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
+            float gcd = f * f * f * 8.0F * 0.15F;
+            float offset = snapYawDelta((float) yawOffset.value, gcd);
             float targetYaw = baseYaw + (displaceLeft ? -offset : offset);
             Claude.rotationManager.setRotation(targetYaw, mc.thePlayer.rotationPitch, 1, true);
         } else if (wasDisplacingLastTick) {
@@ -248,6 +250,11 @@ public class KBDisplace extends Module {
             }
         }
         return closest;
+    }
+
+    private float snapYawDelta(float delta, float gcd) {
+        delta += (float) ((Math.random() - 0.5) * gcd * 0.8);
+        return Math.round(delta / gcd) * gcd;
     }
 
     private boolean anyMovementKey() {
